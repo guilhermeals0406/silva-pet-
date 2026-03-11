@@ -117,18 +117,38 @@ export default function App() {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error: any) {
+      console.error("Erro completo do Firebase:", error);
       if (error.code === 'auth/popup-closed-by-user') {
-        // Just ignore user cancellation
         console.log("Login cancelado pelo usuário.");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setLoginError("Este domínio não está autorizado no Firebase. Adicione '" + window.location.hostname + "' aos domínios autorizados no Console do Firebase.");
+      } else if (error.code === 'auth/operation-not-allowed') {
+        setLoginError("O login com Google não está ativado no Console do Firebase.");
+      } else if (error.code === 'auth/popup-blocked') {
+        setLoginError("O pop-up de login foi bloqueado pelo seu navegador. Por favor, permita pop-ups para este site.");
       } else {
-        console.error("Erro ao fazer login:", error);
-        setLoginError("Ocorreu um erro ao tentar entrar. Por favor, tente novamente.");
+        setLoginError("Erro ao entrar: " + (error.message || "Erro desconhecido"));
       }
     }
   };
 
   // Auth Listener
   useEffect(() => {
+    // Test connection to Firestore
+    const testConnection = async () => {
+      try {
+        const { getDocFromServer } = await import('firebase/firestore');
+        await getDocFromServer(doc(db, 'test', 'connection'));
+        console.log("Conexão com Firestore estabelecida com sucesso.");
+      } catch (error: any) {
+        if (error.message?.includes('the client is offline')) {
+          console.error("Erro de conexão: O cliente está offline ou o domínio não está autorizado.");
+          setLoginError("Erro de conexão com o banco de dados. Verifique se o domínio está autorizado.");
+        }
+      }
+    };
+    testConnection();
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         // Check if user is admin (for ERP access)
