@@ -1,0 +1,7 @@
+{
+  "name": "Silva Pet",
+  "description": "Sistema interno de gestão para pet shops, incluindo controle de estoque, gestão de clientes, pets e agendamentos.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

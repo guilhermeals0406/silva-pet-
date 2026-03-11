@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Customer": {
+      "title": "Customer",
+      "description": "Information about a pet shop customer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "createdAt"]
+    },
+    "Pet": {
+      "title": "Pet",
+      "description": "Information about a pet belonging to a customer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "name": { "type": "string" },
+        "species": { "type": "string" },
+        "breed": { "type": "string" },
+        "age": { "type": "number" },
+        "weight": { "type": "number" }
+      },
+      "required": ["customerId", "name", "species"]
+    },
+    "InventoryItem": {
+      "title": "Inventory Item",
+      "description": "Product in stock.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "sku": { "type": "string" },
+        "category": { "type": "string" },
+        "quantity": { "type": "number" },
+        "minQuantity": { "type": "number" },
+        "costPrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "supplier": { "type": "string" }
+      },
+      "required": ["name", "sku", "quantity", "salePrice"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "A scheduled service.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "petId": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] },
+        "price": { "type": "number" }
+      },
+      "required": ["customerId", "petId", "serviceType", "date", "status"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "A completed transaction.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "object" } },
+        "total": { "type": "number" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["total", "date"]
+    }
+  },
+  "firestore": {
+    "/customers/{customerId}": { "schema": "Customer", "description": "CRM: Customers list" },
+    "/pets/{petId}": { "schema": "Pet", "description": "CRM: Pets list" },
+    "/inventory/{itemId}": { "schema": "InventoryItem", "description": "ERP: Inventory management" },
+    "/appointments/{appointmentId}": { "schema": "Appointment", "description": "Operations: Service schedule" },
+    "/sales/{saleId}": { "schema": "Sale", "description": "ERP: Sales and revenue" }
+  }
+}
